@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from calculos import sumar, restar, multiplicar, dividir, ErrorCalculo
+from calculos import sumar, restar, multiplicar, dividir, get_history, ErrorCalculo
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -40,6 +40,14 @@ def api_calcular():
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': 'Error interno del servidor'}), 500
+
+@app.route('/api/historial', methods=['GET'])
+def api_historial():
+    try:
+        historial = get_history()
+        return jsonify(historial), 200
+    except Exception as e:
+        return jsonify({'error': 'No se pudo obtener el historial'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
