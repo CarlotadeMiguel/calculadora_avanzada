@@ -11,8 +11,16 @@ const validarEmail = (email) => {
 const RegistroUsuario = ({ setUser }) => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmar, setConfirmar] = useState("");
   const [saldo, setSaldo] = useState("");
-  const [tocado, setTocado] = useState({ nombre: false, email: false, saldo: false });
+  const [tocado, setTocado] = useState({
+    nombre: false,
+    email: false,
+    password: false,
+    confirmar: false,
+    saldo: false,
+  });
   const [mensaje, setMensaje] = useState("");
   const [errorBackend, setErrorBackend] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +28,6 @@ const RegistroUsuario = ({ setUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Si llegamos desde login con un email, lo precargamos
   useEffect(() => {
     if (location.state?.email) setEmail(location.state.email);
   }, [location]);
@@ -33,6 +40,16 @@ const RegistroUsuario = ({ setUser }) => {
         ? "El email es obligatorio."
         : !validarEmail(email)
         ? "El email no es válido."
+        : "",
+    password:
+      password.length < 6
+        ? "La contraseña debe tener al menos 6 caracteres."
+        : "",
+    confirmar:
+      confirmar === ""
+        ? "Confirma la contraseña."
+        : password !== confirmar
+        ? "Las contraseñas no coinciden."
         : "",
     saldo:
       saldo === ""
@@ -53,15 +70,23 @@ const RegistroUsuario = ({ setUser }) => {
       const response = await axios.post("http://localhost:5000/api/usuarios", {
         nombre,
         email,
+        password,
         saldo: Number(saldo),
       });
       setMensaje("¡Usuario registrado correctamente!");
-      setUser(response.data); // Guardar usuario en estado global
+      setUser(response.data);
       setNombre("");
       setEmail("");
+      setPassword("");
+      setConfirmar("");
       setSaldo("");
-      setTocado({ nombre: false, email: false, saldo: false });
-      // Redirigir a la app principal
+      setTocado({
+        nombre: false,
+        email: false,
+        password: false,
+        confirmar: false,
+        saldo: false,
+      });
       setTimeout(() => {
         navigate("/app");
       }, 1000);
@@ -120,6 +145,44 @@ const RegistroUsuario = ({ setUser }) => {
         />
         {errores.email && tocado.email && (
           <p className="text-red-600 text-sm mt-1">{errores.email}</p>
+        )}
+      </div>
+      {/* Contraseña */}
+      <div>
+        <label className="block font-medium mb-1" htmlFor="password">
+          Contraseña
+        </label>
+        <input
+          id="password"
+          type="password"
+          className={`w-full border rounded px-3 py-2 focus:outline-none ${
+            errores.password && tocado.password ? "border-red-500" : "border-gray-300"
+          }`}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => setTocado((t) => ({ ...t, password: true }))}
+        />
+        {errores.password && tocado.password && (
+          <p className="text-red-600 text-sm mt-1">{errores.password}</p>
+        )}
+      </div>
+      {/* Confirmar contraseña */}
+      <div>
+        <label className="block font-medium mb-1" htmlFor="confirmar">
+          Confirmar contraseña
+        </label>
+        <input
+          id="confirmar"
+          type="password"
+          className={`w-full border rounded px-3 py-2 focus:outline-none ${
+            errores.confirmar && tocado.confirmar ? "border-red-500" : "border-gray-300"
+          }`}
+          value={confirmar}
+          onChange={(e) => setConfirmar(e.target.value)}
+          onBlur={() => setTocado((t) => ({ ...t, confirmar: true }))}
+        />
+        {errores.confirmar && tocado.confirmar && (
+          <p className="text-red-600 text-sm mt-1">{errores.confirmar}</p>
         )}
       </div>
       {/* Saldo */}

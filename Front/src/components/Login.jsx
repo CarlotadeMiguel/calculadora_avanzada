@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -11,12 +12,14 @@ const Login = ({ setUser }) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/api/login", { email });
+      const res = await axios.post("http://localhost:5000/api/login", { email, password });
       setUser(res.data);
       navigate("/app");
     } catch (err) {
       if (err.response && err.response.status === 404) {
-        navigate("/registro", { state: { email } });
+        setError("El usuario no existe. Debes registrarte.");
+      } else if (err.response && err.response.status === 401) {
+        setError("Credenciales incorrectas.");
       } else {
         setError("Error de red o del servidor.");
       }
@@ -34,6 +37,14 @@ const Login = ({ setUser }) => {
         onChange={(e) => setEmail(e.target.value)}
         required
       />
+      <input
+        type="password"
+        placeholder="Contraseña"
+        className="w-full border rounded px-3 py-2"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
       {error && <p className="text-red-600 text-sm">{error}</p>}
       <button
         type="submit"
@@ -41,6 +52,12 @@ const Login = ({ setUser }) => {
       >
         Entrar
       </button>
+      <div className="text-center mt-4">
+        <span>¿No tienes cuenta? </span>
+        <Link to="/registro" className="text-blue-600 underline">
+          Regístrate aquí
+        </Link>
+      </div>
     </form>
   );
 };
