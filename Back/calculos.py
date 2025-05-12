@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from threading import Lock
+from uuid import uuid4  # Nuevo: Generar UUIDs
 
 class ErrorCalculo(Exception):
     pass
@@ -11,7 +12,7 @@ lock = Lock()
 
 def log_operation(operation, params, result):
     log_entry = {
-        "id": len(get_history()) + 1,
+        "id": str(uuid4()),  # UUID único
         "timestamp": datetime.now().isoformat(),
         "operation": operation,
         "parameters": params,
