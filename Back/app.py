@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from calculos import sumar, restar, multiplicar, dividir, get_history, ErrorCalculo
+from usuarios import registrar_usuario, actualizar_saldo, aplicar_descuento_general
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -48,6 +49,24 @@ def api_historial():
         return jsonify(historial), 200
     except Exception as e:
         return jsonify({'error': 'No se pudo obtener el historial'}), 500
+    
+@app.route('/api/usuarios', methods=['POST'])
+def api_registrar_usuario():
+    data = request.json
+    try:
+        nombre = data.get('nombre')
+        email = data.get('email')
+        saldo = data.get('saldo')
+
+        if not nombre or not email or saldo is None:
+            return jsonify({'error': 'Faltan parámetros'}), 400
+
+        nuevo_usuario = registrar_usuario(nombre, email, saldo)
+        return jsonify(nuevo_usuario), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

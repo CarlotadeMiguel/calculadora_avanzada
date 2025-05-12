@@ -1,4 +1,5 @@
 Front/node_modules
 Back/utils/history.json
+Back/utils/usuarios.json
 Back/__pycache__/
 Back/venv/
