@@ -56,31 +56,37 @@ def api_registrar_usuario():
     try:
         nombre = data.get('nombre')
         email = data.get('email')
+        password = data.get('password')
         saldo = data.get('saldo')
-
-        if not nombre or not email or saldo is None:
+        if not nombre or not email or not password or saldo is None:
             return jsonify({'error': 'Faltan parámetros'}), 400
-
-        nuevo_usuario = registrar_usuario(nombre, email, saldo)
+        from usuarios import registrar_usuario
+        nuevo_usuario = registrar_usuario(nombre, email, password, saldo)
         return jsonify(nuevo_usuario), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': 'Error interno del servidor'}), 500
+
     
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.json
     email = data.get('email')
-    if not email:
-        return jsonify({'error': 'Falta el email'}), 400
-    from usuarios import cargar_usuarios
+    password = data.get('password')
+    if not email or not password:
+        return jsonify({'error': 'Faltan parámetros'}), 400
+    from usuarios import cargar_usuarios, autenticar_usuario
     usuarios = cargar_usuarios()
     usuario = next((u for u in usuarios if u['email'] == email), None)
-    if usuario:
-        return jsonify(usuario), 200
-    else:
+    if not usuario:
         return jsonify({'error': 'Usuario no encontrado'}), 404
+    if not autenticar_usuario(email, password):
+        return jsonify({'error': 'Credenciales incorrectas'}), 401
+    # Si llega aquí, autenticación exitosa
+    usuario_sin_hash = dict(usuario)
+    usuario_sin_hash.pop("password_hash")
+    return jsonify(usuario_sin_hash), 200
 
 
 if __name__ == '__main__':
