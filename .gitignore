@@ -1,2 +1,3 @@
 ./Front/node_modules
 ./Back/__pycache__
+./Back/utils/history.json
