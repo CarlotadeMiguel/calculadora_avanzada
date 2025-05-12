@@ -88,6 +88,30 @@ def api_login():
     usuario_sin_hash.pop("password_hash")
     return jsonify(usuario_sin_hash), 200
 
+@app.route('/api/usuarios/<usuario_id>/saldo', methods=['PUT'])
+def api_actualizar_saldo(usuario_id):
+    data = request.json
+    try:
+        nuevo_saldo = data.get('saldo')
+        from usuarios import actualizar_saldo
+        usuario_actualizado = actualizar_saldo(usuario_id, nuevo_saldo)
+        return jsonify(usuario_actualizado), 200
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 404
+    except Exception as e:
+        return jsonify({'error': 'Error interno del servidor'}), 500
+
+@app.route('/api/usuarios/descuento', methods=['POST'])
+def api_aplicar_descuento():
+    data = request.json
+    try:
+        porcentaje = data.get('porcentaje')
+        from usuarios import aplicar_descuento_general
+        aplicar_descuento_general(porcentaje)
+        return jsonify({"status": "Descuento aplicado"}), 200
+    except Exception as e:
+        return jsonify({'error': 'Error interno del servidor'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
