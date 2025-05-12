@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const validarEmail = (email) => {
   const atIdx = email.indexOf("@");
@@ -7,7 +8,7 @@ const validarEmail = (email) => {
   return atIdx > 0 && dotIdx > atIdx + 1;
 };
 
-const RegistroUsuario = () => {
+const RegistroUsuario = ({ setUser }) => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [saldo, setSaldo] = useState("");
@@ -16,7 +17,15 @@ const RegistroUsuario = () => {
   const [errorBackend, setErrorBackend] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Errores de validación
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Si llegamos desde login con un email, lo precargamos
+  useEffect(() => {
+    if (location.state?.email) setEmail(location.state.email);
+  }, [location]);
+
+  // Validaciones
   const errores = {
     nombre: nombre.trim() === "" ? "El nombre es obligatorio." : "",
     email:
@@ -47,10 +56,15 @@ const RegistroUsuario = () => {
         saldo: Number(saldo),
       });
       setMensaje("¡Usuario registrado correctamente!");
+      setUser(response.data); // Guardar usuario en estado global
       setNombre("");
       setEmail("");
       setSaldo("");
       setTocado({ nombre: false, email: false, saldo: false });
+      // Redirigir a la app principal
+      setTimeout(() => {
+        navigate("/app");
+      }, 1000);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setErrorBackend(err.response.data.error);
@@ -70,7 +84,6 @@ const RegistroUsuario = () => {
       <h2 className="text-xl font-bold mb-4">Registrar Usuario</h2>
       {mensaje && <div className="text-green-600 font-medium">{mensaje}</div>}
       {errorBackend && <div className="text-red-600 font-medium">{errorBackend}</div>}
-      {/* ...campos del formulario igual que antes... */}
       {/* Nombre */}
       <div>
         <label className="block font-medium mb-1" htmlFor="nombre">
