@@ -1,3 +1,4 @@
-./Front/node_modules
-./Back/__pycache__
-./Back/utils/history.json
+Front/node_modules
+Back/utils/history.json
+Back/__pycache__/
+Back/venv/
