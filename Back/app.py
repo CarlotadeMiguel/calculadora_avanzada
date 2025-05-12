@@ -67,6 +67,21 @@ def api_registrar_usuario():
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': 'Error interno del servidor'}), 500
+    
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.json
+    email = data.get('email')
+    if not email:
+        return jsonify({'error': 'Falta el email'}), 400
+    from usuarios import cargar_usuarios
+    usuarios = cargar_usuarios()
+    usuario = next((u for u in usuarios if u['email'] == email), None)
+    if usuario:
+        return jsonify(usuario), 200
+    else:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
