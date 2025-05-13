@@ -30,6 +30,12 @@ const AumentarSaldo = ({ user, setUser }) => {
     setRespuesta("");
   };
 
+  const handleCerrarPrueba = () => {
+    setMostrarPrueba(false);
+    setMensaje("");
+    setRespuesta("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
@@ -90,13 +96,20 @@ const AumentarSaldo = ({ user, setUser }) => {
           >
             {loading ? "Verificando..." : "Enviar respuesta"}
           </button>
+          <button
+            type="button"
+            onClick={handleCerrarPrueba}
+            className="w-full py-2 px-4 mt-4 rounded font-semibold text-red-600 bg-red-100 hover:bg-red-200"
+          >
+            Cerrar prueba
+          </button>
         </form>
       )}
       {mensaje && (
         <div className="mt-4 text-green-600 font-medium text-center">{mensaje}</div>
       )}
       {error && (
-        <div className="mt-4 text-red-600 font-medium text-center">{mensaje}</div>
+        <div className="mt-4 text-red-600 font-medium text-center">{error}</div>
       )}
     </div>
   );
