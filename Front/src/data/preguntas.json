@@ -1,0 +1,34 @@
+[
+    {
+      "pregunta": "¿Cuánto es 7 + 6?",
+      "respuesta": "13"
+    },
+    {
+      "pregunta": "¿Cuál es el resultado de 9 - 4?",
+      "respuesta": "5"
+    },
+    {
+      "pregunta": "¿Cuánto es 3 x 3?",
+      "respuesta": "9"
+    },
+    {
+      "pregunta": "¿Cuánto es 12 dividido por 4?",
+      "respuesta": "3"
+    },
+    {
+      "pregunta": "¿Cuál es el siguiente número después de 15?",
+      "respuesta": "16"
+    },
+    {
+      "pregunta": "¿Cuánto es 5 + 8?",
+      "respuesta": "13"
+    },
+    {
+      "pregunta": "¿Cuánto es 10 - 7?",
+      "respuesta": "3"
+    },
+    {
+      "pregunta": "¿Cuánto es 6 x 2?",
+      "respuesta": "12"
+    }
+]
