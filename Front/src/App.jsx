@@ -4,7 +4,7 @@ import Calculadora from "./components/Calculadora";
 import History from "./components/History";
 import RegistroUsuario from "./components/RegistroUsuario";
 import Login from "./components/Login";
-import ActualizarSaldo from "./components/ActualizarSaldo";
+import AumentarSaldo from "./components/AumentarSaldo";
 import AplicarDescuento from "./components/AplicarDescuento";
 
 function ProtectedRoute({ user, children }) {
@@ -26,7 +26,7 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="max-w-4xl mx-auto p-4 space-y-6">
                 <div className="flex gap-4">
-                  <ActualizarSaldo user={user} setUser={setUser} />
+                  <AumentarSaldo user={user} setUser={setUser} />
                   <AplicarDescuento />
                 </div>
                 <Calculadora user={user} setUser={setUser} />
