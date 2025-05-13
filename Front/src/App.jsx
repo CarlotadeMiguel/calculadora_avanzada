@@ -29,7 +29,7 @@ function App() {
                   <ActualizarSaldo user={user} setUser={setUser} />
                   <AplicarDescuento />
                 </div>
-                <Calculadora />
+                <Calculadora user={user} setUser={setUser} />
                 <History />
               </div>
             </ProtectedRoute>
