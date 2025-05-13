@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Calculadora = () => {
+const Calculadora = ({ user, setUser }) => {
     const [numero1, setNumero1] = useState('');
     const [numero2, setNumero2] = useState('');
     const [operacion, setOperacion] = useState('sumar');
@@ -16,21 +16,26 @@ const Calculadora = () => {
         try {
             const response = await axios.post('http://localhost:5000/api/calcular', {
                 operacion,
+                user:user?.id,
                 a: parseFloat(numero1),
                 b: parseFloat(numero2),
             });
+
             setResultado(response.data.resultado);
+            setUser(response.data.user);
+            
         } catch (err) {
-            if (err.response) {
-                setError(err.response.data.error || 'Error al realizar el cálculo.');
-            } else {
-                setError('Error de red. Intente nuevamente.');
-            }
+          if (err.response) {
+            setError(err.response.data.error || 'Error al realizar el cálculo.');
+          } else {
+            setError('Error de red. Intente nuevamente.');
+          }
         }
-    };
+      };
 
     return (
         <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
+            <p>Saldo: {user?.saldo}</p>
             <h1 className="text-2xl font-bold text-center mb-6">Calculadora</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

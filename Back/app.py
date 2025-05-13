@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from calculos import sumar, restar, multiplicar, dividir, get_history, ErrorCalculo
-from usuarios import registrar_usuario, actualizar_saldo, aplicar_descuento_general
+from usuarios import registrar_usuario, autenticar_usuario, cargar_usuarios, actualizar_saldo, aplicar_descuento_general
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -20,6 +20,7 @@ def api_calcular():
         operacion = data.get('operacion')
         a = data.get('a')
         b = data.get('b')
+        usuario_id = data.get('user')  # Asegúrate de que el frontend lo envía
 
         if operacion not in ['sumar', 'restar', 'multiplicar', 'dividir']:
             return jsonify({'error': 'Operación no válida'}), 400
@@ -27,6 +28,19 @@ def api_calcular():
         if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
             return jsonify({'error': 'Los parámetros deben ser números'}), 400
 
+        # Verificar saldo del usuario
+        if not usuario_id:
+            return jsonify({'error': 'Falta usuario_id'}), 400
+
+        usuarios = cargar_usuarios()
+        usuario = next((u for u in usuarios if u['id'] == usuario_id), None)
+        if not usuario:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        if usuario['saldo'] <= 0:
+            return jsonify({'error': 'Saldo insuficiente'}), 403
+
+        # Realizar el cálculo
         if operacion == 'sumar':
             result = sumar(a, b)
         elif operacion == 'restar':
@@ -36,7 +50,12 @@ def api_calcular():
         elif operacion == 'dividir':
             result = dividir(a, b)
 
-        return jsonify({'resultado': result}), 200
+        # Descontar saldo
+        nuevo_saldo = usuario['saldo'] - 1
+        usuario_actualizado = actualizar_saldo(usuario_id, nuevo_saldo)
+
+        return jsonify({'resultado': result, 'user': usuario_actualizado}), 200
+
     except ErrorCalculo as e:
         return jsonify({'error': str(e)}), 400
     except Exception as e:
@@ -60,7 +79,7 @@ def api_registrar_usuario():
         saldo = data.get('saldo')
         if not nombre or not email or not password or saldo is None:
             return jsonify({'error': 'Faltan parámetros'}), 400
-        from usuarios import registrar_usuario
+
         nuevo_usuario = registrar_usuario(nombre, email, password, saldo)
         return jsonify(nuevo_usuario), 201
     except ValueError as e:
@@ -76,7 +95,7 @@ def api_login():
     password = data.get('password')
     if not email or not password:
         return jsonify({'error': 'Faltan parámetros'}), 400
-    from usuarios import cargar_usuarios, autenticar_usuario
+
     usuarios = cargar_usuarios()
     usuario = next((u for u in usuarios if u['email'] == email), None)
     if not usuario:
@@ -93,7 +112,7 @@ def api_actualizar_saldo(usuario_id):
     data = request.json
     try:
         nuevo_saldo = data.get('saldo')
-        from usuarios import actualizar_saldo
+
         usuario_actualizado = actualizar_saldo(usuario_id, nuevo_saldo)
         return jsonify(usuario_actualizado), 200
     except ValueError as e:
@@ -106,7 +125,7 @@ def api_aplicar_descuento():
     data = request.json
     try:
         porcentaje = data.get('porcentaje')
-        from usuarios import aplicar_descuento_general
+
         aplicar_descuento_general(porcentaje)
         return jsonify({"status": "Descuento aplicado"}), 200
     except Exception as e:
