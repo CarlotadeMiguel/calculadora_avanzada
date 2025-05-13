@@ -12,7 +12,7 @@ Calculadora Avanzada es una aplicación web que permite a los usuarios realizar 
 - **Backend robusto**: API RESTful construida con Python y Flask.
 
 ## Estructura del repositorio
-
+```
 calculadora_avanzada/
 │
 ├── Front/
@@ -32,7 +32,7 @@ calculadora_avanzada/
 │
 └── README.md
 
-
+```
 ## Tecnologías utilizadas
 
 - **Frontend**: React 19, React Router DOM 7, Axios, Tailwind CSS, Vite
